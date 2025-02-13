@@ -11,10 +11,14 @@ from django.db.models import Q
 
 User = get_user_model()
 
+def redirect_home(request):
+    return redirect('home')
+
 def home(request):
     if request.user.is_authenticated == False: return redirect('signin')
     
-    filtered_events = Event.objects.filter((Q(branches__in=[request.user.profile.department]) & Q(batches__contains=str(request.user.profile.batch))) | (Q(coordinator1=request.user.id) | Q(coordinator2=request.user.id))).distinct()
+    filtered_events = Event.objects.filter((Q(branches__in=[request.user.profile.department]) & Q(batches__contains=str(request.user.profile.batch))) |
+                                           (Q(coordinator1=request.user.id) | Q(coordinator2=request.user.id))).distinct()
     return render(request, 'index.html', context={"events": filtered_events, "today": date.today()})
 
 def signin(request):
