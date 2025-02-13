@@ -1,0 +1,149 @@
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    margin-left: 10px;
+    /* Add some space between the text and the switch */
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #60ae87;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #60ae87;
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.event-card {
+    background-color: #1a1a1a;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 0.1px solid white;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+    /* Transition for background color */
+}
+
+.event-card:hover {
+    background-color: #222;
+    /* Change background color on hover */
+}
+
+.event-card>* {
+    position: relative;
+    z-index: 1;
+}
+
+.event-card h2 {
+    margin-top: 0;
+}
+
+.event-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.fund-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border: 0.5px solid white;
+    padding: 10px;
+    /* Increased padding for taller fund box */
+    box-sizing: border-box;
+}
+
+.student-list {
+    list-style: none;
+    padding: 0;
+}
+
+.student-list li {
+    border: 0.1px solid white;
+    transition: none;
+    box-shadow: none;
+    transform: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    /* Increased padding for taller list items */
+}
+
+.student-list li div {
+    flex: 1;
+    text-align: center;
+}
+
+.student-list li div:first-child {
+    text-align: left;
+}
+
+.student-list li div:last-child {
+    text-align: right;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.inline-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    /* Reduced margin-bottom for less vertical gap */
+}
+
+.event-card p {
+    margin-bottom: 5px;
+    /* Reduced margin-bottom for less vertical gap */
+}

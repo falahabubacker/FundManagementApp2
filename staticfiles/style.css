@@ -1,0 +1,144 @@
+* {
+    -webkit-tap-highlight-color: transparent; /* Disable touch highlight */
+}
+
+body {
+    font-family: sans-serif;
+    background-color: black;
+    color: #60ae87;
+    margin: 0 auto;
+    /* Center the body */
+    padding: 0;
+    max-width: 600px;
+    /* Set maximum width */
+    font-size: 1.1em;
+    /* Slightly bigger text */
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.nav-left {
+    font-size: 1.6em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.nav-left a {
+    margin-right: 10px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.nav-right span {
+    margin-right: 15px;
+    /* Increased spacing */
+}
+
+.nav-right button {
+    background-color: transparent;
+    color: #60ae87;
+    border: 1px solid #60ae87;
+    padding: 5px 10px;
+    margin: 0 5px;
+    /* Reduced spacing between buttons */
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.nav-right a button {
+    background-color: transparent;
+    color: #60ae87;
+    border: 1px solid #60ae87;
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.nav-right i {
+    font-size: 1.6em;
+    cursor: pointer;
+    margin-left: 10px;
+    /* Increased spacing */
+}
+
+.nav-right a i {
+    color: #60ae87;
+    font-size: 1.6em;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.nav-left a i {
+    color: #60ae87;
+    font-size: 1em;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+hr {
+    border-color: #60ae87;
+    margin: 0;
+}
+
+.container {
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+section div a i {
+    color: #60ae87;
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background-color: #1a1a1a;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    /* Faster transition for all properties */
+    border: 0.1px solid white;
+    /* White border */
+}
+
+li div {
+    flex: 1;
+    text-align: center;
+}
+
+li div:first-child {
+    text-align: left;
+}
+
+li div:last-child {
+    text-align: right;
+}
+
+li:hover {
+    box-shadow: 0 0 10px 5px #60ae87;
+    background-color: #222;
+    transform: translateY(-3px);
+    /* Slight rise effect */
+}
