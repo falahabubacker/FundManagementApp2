@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fund Collection App</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <nav>
+        <div class="nav-left">
+            <strong>Events</strong>
+        </div>
+        <div class="nav-right">
+            <span id="admission-number" style="margin-right: 15px;">ADMNO: {{request.user.profile.admission_number}}</span>
+            <button id="increase-font">+</button>
+            <button id="decrease-font">-</button>
+            <a href="/login/"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+    <hr>
+    <div class="container">
+        <section id="upcoming-events">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Upcoming Events</h2>
+                <a href="/create-event/"><i class="fas fa-plus-circle"
+                        style="font-size: 1.5em; color: #60ae87;"></i></a>
+            </div>
+            <ul id="upcoming-events-list">
+                {% for event in events %}
+                    {% if event.date >= today %}
+                    <li onclick="window.location.href='/event-details/{{event.pk}}'">
+                        <div>{{event.name}}</div>
+                        <div>{{event.date}}</div>
+                        <div>₹ {{event.fund_collected}} / {{event.fund_required}}</div>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </section>
+        <section id="past-events">
+            <h2>Past Events</h2>
+            <ul id="past-events-list">
+                {% for event in events %}
+                    {% if event.date < today %}
+                    <li onclick="window.location.href='/event-details/{{event.pk}}'">
+                        <div>{{event.name}}</div>
+                        <div>{{event.date}}</div>
+                        <div>₹ {{event.fund_collected}} / {{event.fund_required}}</div>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

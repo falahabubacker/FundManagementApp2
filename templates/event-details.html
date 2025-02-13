@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/event.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="/home"><i class="fas fa-home"></i></a>
+            <strong>Event Details</strong>
+        </div>
+        <div class="nav-right">
+            <span id="admission-number" style="margin-right: 15px;">ADMNO: {{request.user.profile.admission_number}}</span>
+            <button id="increase-font">+</button>
+            <button id="decrease-font">-</button>
+            <a href="/login"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+    <hr>
+    <div class="container">
+        <div class="event-card" id="event-card">
+            {% if request.user.pk == event.coordinator2.pk or request.user.pk == event.coordinator1.pk %}
+            <div style="position: absolute; top: 10px; right: 10px; z-index: 2;">
+                <a href="/create-event/{{event.id}}" style="color: #60ae87;"><i class="fas fa-pencil-alt"></i></a>
+            </div>
+            {% endif %}
+            <h2 id="event-name">{{event.name}}</h2>
+            <div class="inline-details">
+                <span id="event-date">Date: {{event.date}}</span>
+                <span id="event-participants">Participants: {{event.participants}}</span>
+            </div>
+            <div class="inline-details">
+                <span id="event-branches">Branches: {% for branch in event.branches.all %} {{branch}} {% endfor %}</span>
+                <span id="event-batches">Batches: {{event.batches}}</span>
+            </div>
+            <div class="inline-details">
+                <span id="event-manager-1">Manager 1: {{event.coordinator1}}</span>
+                <span id="event-manager-2">Manager 2: {{event.coordinator2}}</span>
+            </div>
+            <div class="fund-box">
+                <span id="event-fund">Fund: ₹ {{event.fund_collected}} / {{event.fund_required}}</span>
+                <span id="event-fund-pps">Fund PPS: ₹ {{event.fund_per_person}}</span>
+            </div>
+        </div>
+        <form id="students-form" action="" method="post">
+            {% csrf_token %}
+            <input type="text" name="event" value="{{event}}" hidden>
+            <section id="students">
+            <div class="section-header">
+                <h2 id="student-header-text">Unpaid Students</h2>
+                <div style="align-items: center; display: flex; gap: 10px;">
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-paid">
+                        <span class="slider round"></span>
+                    </label>
+                    {% if request.user.pk == event.coordinator2.pk or request.user.pk == event.coordinator1.pk %}
+                    <a style="color: #60ae87;"><i class="fas fa-pencil-alt" id="student-edit-icon"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+            <ul class="student-list" id="paid-students-list">
+                <!-- Paid students will be added here -->
+                {% for payment in paid_students %}
+                <li>
+                    <div>{{payment.student.profile.pk}}. {{payment.student.profile.admission_number}} - {{payment.student.profile.user}}</div>
+                    <div>{{payment.student.profile.batch}}" {{payment.student.profile.department}}</div>
+                    <div style="display: flex;align-items: center;justify-content: end;gap: 2px;">₹ {{payment.amount_paid}} 
+                        <input name="paid_students" value="{{payment.student.pk}}" style="accent-color: #60ae87; width: 16px; height: 16px;" type="checkbox" disabled checked onclick="if(!this.checked) {document.getElementById('hidden_unpaid_checkbox_{{payment.student.pk}}').checked = true} else{document.getElementById('hidden_unpaid_checkbox_{{payment.student.pk}}').checked = false}">
+                        <input type="checkbox" id="hidden_unpaid_checkbox_{{payment.student.pk}}" name="unpaid_students" value="{{payment.student.pk}}" hidden unchecked>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <ul class="student-list" id="unpaid-students-list">
+                <!-- Unpaid students will be added here -->
+                {% for student in unpaid_students %}
+                <li>
+                    <div>{{student.profile.pk}}. {{student.profile.admission_number}} - {{student.profile.user}}</div>
+                    <div>{{student.profile.batch}}" {{student.profile.department}}</div>
+                    <div style="display: flex;align-items: center;justify-content: end;gap: 2px;">₹ 0 
+                        <input name="paid_students" value="{{student.pk}}" style="accent-color: #60ae87; width: 16px; height: 16px;" type="checkbox" disabled unchecked onclick="if(this.checked) {document.getElementById('hidden_unpaid_checkbox_{{student.pk}}').checked = false} else{document.getElementById('hidden_unpaid_checkbox_{{student.pk}}').checked = true}">
+                        <input type="checkbox" id="hidden_unpaid_checkbox_{{student.pk}}" name="unpaid_students" value="{{student.pk}}" hidden checked>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePaid = document.getElementById('toggle-paid');
+            const paidStudentsList = document.getElementById('paid-students-list');
+            const unpaidStudentsList = document.getElementById('unpaid-students-list');
+            const studentHeaderText = document.getElementById('student-header-text');
+            const eventCard = document.getElementById('event-card');
+            const studentEditIcon = document.getElementById('student-edit-icon');
+            const checkboxes = document.querySelectorAll('.student-list li div input[type="checkbox"]');
+            let initialCheckboxStates = [];
+
+            let isEditing = false;
+
+            // Initially hide unpaid students
+            paidStudentsList.style.display = 'none';
+            togglePaid.checked = false;
+            studentHeaderText.textContent = 'Unpaid Students';
+
+            togglePaid.addEventListener('change', function () {
+                if (this.checked) {
+                    paidStudentsList.style.display = 'block';
+                    unpaidStudentsList.style.display = 'none';
+                    studentHeaderText.textContent = 'Paid Students';
+                } else {
+                    paidStudentsList.style.display = 'none';
+                    unpaidStudentsList.style.display = 'block';
+                    studentHeaderText.textContent = 'Unpaid Students';
+                }
+            });
+
+            studentEditIcon.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent navigation
+
+                if (!isEditing) {
+                    // 1. Change icon to tick
+                    studentEditIcon.classList.remove('fa-pencil-alt');
+                    studentEditIcon.classList.add('fa-check');
+                    studentEditIcon.style.color = '#60ae87';
+
+                    // 2. Enable checkboxes
+                    initialCheckboxStates = Array.from(checkboxes).map(checkbox => checkbox.checked); // <---
+                    checkboxes.forEach(checkbox => {
+                        checkbox.disabled = false;
+                    });
+
+                    isEditing = true;
+                } else {
+                    // 3. Confirm changes
+                    let changesMade = false; // <---
+                    checkboxes.forEach((checkbox, index) => { // <---
+                        if (checkbox.checked !== initialCheckboxStates[index]) { // <---
+                            changesMade = true; // <---
+                        }
+                    });
+                    if (changesMade) { // <---
+                        const confirmChanges = confirm("Are you sure you want to save the changes?");
+
+                        if (confirmChanges) {
+                            // Save changes (this is a placeholder - implement your save logic here)
+                            document.getElementById("students-form").submit();
+                            alert("Changes saved!"); // Replace with actual save logic
+                        }
+                    }
+
+                    // 4. Revert to pencil icon and disable checkboxes
+                    studentEditIcon.classList.remove('fa-check');
+                    studentEditIcon.classList.add('fa-pencil-alt');
+                    studentEditIcon.style.color = '#60ae87';
+
+                    checkboxes.forEach(checkbox => {
+                        checkbox.disabled = true;
+                    });
+
+                    isEditing = false;
+                }
+            });
+
+        });
+    </script>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

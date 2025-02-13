@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/create-event.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="/home/"><i class="fas fa-home"></i></a>
+            <strong>Create Event</strong>
+        </div>
+        <div class="nav-right">
+            <span id="admission-number" style="margin-right: 15px;">ADMNO: {{request.user.profile.admission_number}}</span>
+            <button id="increase-font">+</button>
+            <button id="decrease-font">-</button>
+            <a href="/login/"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+    <hr>
+    <div class="container">
+        
+        <form id="create-event-form" method="post" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="event-name">Event Name:</label>
+                <input type="text" id="event-name" name="name"
+                value="{% if form.name.value %}{{ form.name.value }}{% endif %}" required>
+                {% if form.name.errors %}
+                <div class="alert alert-danger">
+                    {{ form.name.errors|striptags }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date"
+                value="{% if form.date.value|date:'Y-m-d' %}{{ form.date.value|date:'Y-m-d' }}{% elif form.date.value %}{{ form.date.value }}{% endif %}"
+                required>
+                {% if form.date.errors %}
+                <div class="alert alert-danger">
+                    {{ form.date.errors|striptags }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="participants">Participants:</label>
+                <input type="number" id="participants" name="participants" value="{% if form.participants.value %}{{ form.participants.value }}{% endif %}">
+                {% if form.participants.errors %}
+                <div class="alert alert-danger">
+                    {{ form.participants.errors|striptags }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="inline-inputs">
+                <div class="form-group">
+                    <label for="required-fund">Required Fund:</label>
+                    <input type="number" id="required-fund" name="fund_required"
+                    value="{% if form.fund_required.value %}{{ form.fund_required.value }}{% endif %}"
+                    required>
+                    {% if form.fund_required.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.fund_required.errors|striptags }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="fund_per_person">Fund per-person:</label>
+                    <input type="number" id="per-person-fund" name="fund_per_person" value="{% if form.fund_per_person.value %}{{ form.fund_per_person.value }}{% endif %}">
+                    {% if form.fund_per_person.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.fund_per_person.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="inline-inputs">
+                <div class="form-group">
+                    <label for="branches">Branches:</label>
+                    <select id="branches" name="branches" multiple
+                    value="{% if form.branches.value %}{{ form.branches.value }}{% endif %}">
+                    {% for value, label in form.branches.field.widget.choices %}
+                        <option value="{{ value }}" {% if value|stringformat:'s' in form.branches.value|stringformat:'s'|default_if_none:'' %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                    </select>
+                    {% if form.branches.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.branches.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="batches">Batches:</label>
+                    <input type="text" id="batches" name="batches"
+                    value="{% if form.batches.value %}{{ form.batches.value }}{% endif %}">
+                    {% if form.batches.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.batches.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <datalist id="users">
+                {% for user in users %}
+                    <option value="{{user.pk}}">{{user}}-{{user.admission_number}}</option>
+                {% endfor %}
+            </datalist>
+            <div class="inline-inputs">
+                <div class="form-group">
+                    <label for="manager-1">Manager 1:</label>
+                    <input type="search" list="users" id="manager-1" name="coordinator1"
+                    value="{% if form.coordinator1.value %}{{ form.coordinator1.value }}{% endif %}">
+
+                    {% if form.coordinator1.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.coordinator1.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="manager-2">Manager 2:</label>
+                    <input type="search" list="users" id="manager-2" name="coordinator2"
+                    value="{% if form.coordinator2.value %}{{ form.coordinator2.value }}{% endif %}">
+
+                    {% if form.coordinator2.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.coordinator2.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button type="submit">Create Event</button>
+        </form>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
