@@ -59,7 +59,7 @@ def event_details(request, id):
         
         
     
-    paid_students = Payment.objects.filter(event=event).select_related('student')
+    paid_students = Payment.objects.filter(event=event).select_related('student').distinct()
 
     # Extract the students who paid
     paid_student_ids = [payment.student.id for payment in paid_students]
@@ -72,15 +72,15 @@ def event_details(request, id):
     eligible_students = User.objects.filter(
         profile__department__in=invited_branches,
         profile__batch__in=invited_batches
-    )
+    ).distinct()
 
     # Filter out students who have already paid
     unpaid_students = [student for student in eligible_students if student.id not in paid_student_ids]
 
     context = {
         'event': event,
-        'paid_students': paid_students.distinct(),
-        'unpaid_students': unpaid_students.distinct(),
+        'paid_students': paid_students,
+        'unpaid_students': unpaid_students,
     }
 
     return render(request, 'event-details.html', context=context)
