@@ -79,8 +79,8 @@ def event_details(request, id):
 
     context = {
         'event': event,
-        'paid_students': paid_students,
-        'unpaid_students': unpaid_students,
+        'paid_students': paid_students.distinct(),
+        'unpaid_students': unpaid_students.distinct(),
     }
 
     return render(request, 'event-details.html', context=context)
