@@ -41,14 +41,14 @@ def event_details(request, id):
     if request.method == 'POST':
 
         for student_id in request.POST.getlist('paid_students'):
-            save_form = PaymentForm({'event': id,
-                                    'student': student_id,
-                                    'amount_paid': event.fund_per_person})
+            if Payment.objects.filter(event=event.id, student=int(student_id)).exists() == False:
+                save_form = PaymentForm({'event': id,
+                                        'student': student_id,
+                                        'amount_paid': event.fund_per_person})
 
-            if save_form.is_valid():
-                print("saved")
-                save_form.save()  # Save the new payment to the database
-            
+                if save_form.is_valid():
+                    save_form.save()  # Save the new payment to the database
+                
         delete_payments = Payment.objects.filter(student__pk__in=request.POST.getlist('unpaid_students'))
         
         if delete_payments:
@@ -76,11 +76,10 @@ def event_details(request, id):
 
     # Filter out students who have already paid
     unpaid_students = [student for student in eligible_students if student.id not in paid_student_ids]
-
     context = {
         'event': event,
-        'paid_students': list(set(paid_students)),
-        'unpaid_students': list(set(unpaid_students)),
+        'paid_students': set(paid_students),
+        'unpaid_students': set(unpaid_students),
     }
 
     return render(request, 'event-details.html', context=context)
@@ -95,18 +94,14 @@ def create_event(request, id=None):
             form = EventCreationForm(request.POST)
 
         if form.is_valid():
-            print('valid')
             form.save()  # Save the new event to the database
             return redirect('event_details', id=form.instance.id)  # Redirect to a list of events or a success page
         else:
-            print(form['date'].value)
             context = {'form': form, 'users': UserProfile.objects.all()} # Pass the form with errors back to template
             return render(request, 'create-event.html', context) # Re-render with errors
     else:
-        print('get')
         if id != None:
             form = EventCreationForm(instance=get_object_or_404(Event, id=id))
-            print("Date:", form.instance.date)
             context = {'form': form, 'users': UserProfile.objects.all()} # Create context for the form
             return render(request, 'create-event.html', context)
         else:
