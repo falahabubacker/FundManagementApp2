@@ -1,0 +1,4 @@
+venv/
+fundmanager/__pycache__/
+core/__pycache__/
+fundmanager/migrations/__pycache__/
